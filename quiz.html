@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    *{
+        margin:0;
+        padding: 0;
+    }
+    body{
+        font-family: sans-serif;
+        background-color: #282c34;
+        color: aliceblue;
+        display: flex;
+        justify-content: center;
+    }
+    .container{
+        width: 400px;
+        margin: auto;
+        text-align: center;
+        margin-top: 100px;
+        background-color: #555b62;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    ul{
+        list-style-type: none;
+        margin-top: 20px;
+        text-align: left;
+    }
+    li{
+        padding: 5px 0;
+        cursor: pointer;
+        border-bottom: 1px solid #ccc;
+    }
+    li.selected{
+        background-color: #61dafb;
+        color: black;
+        font-weight: bold;
+    }
+    button{
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #61dafb;
+        color: black;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+    .total{
+        margin-top: 10px;
+        font-weight: bold;
+    }
+    .cart-items {
+        text-align: left;
+        margin-top: 10px;
+        background: #444a50;
+        padding: 10px;
+        border-radius: 5px;
+    }
+    .cart-items li{
+        border: none;
+        padding: 3px 0;
+    }
+    .result{
+        display: none;
+    }
+    #question-container{
+        display: none;
+    }
+    #start-btn{
+        margin-top: 50px;
+    }
+
+</style>
+<body>
+    <div class="container">
+        <h1>Quiz Time</h1>
+        <div id="quiz-container ">
+            <div id="question-container">
+                <h2 id="question-text"></h2>
+                <ul id="choices-list"></ul>
+                 <button id="next-btn">Next</button>
+
+            </div>
+            
+            <div class="result" id="result">
+                <h2>Your Score: <span id="score"></span></h2>
+                <button id="restart-btn">Restart Quiz</button>
+            </div>
+            <button id="start-btn">Start Quiz</button>
+
+        </div>
+
+    </div>
+
+    </div>
+    
+</body>
+
+<script>
+    document.addEventListener('DOMContentLoaded',() => {
+
+
+        const startBtn = document.getElementById('start-btn')
+        const nextBtn = document.getElementById('next-btn')
+        const restartBtn = document.getElementById('restart-btn')
+        const questionContainer = document.getElementById('question-container')
+        const questionText = document.getElementById('question-text')
+        const choicesList = document.getElementById('choices-list')
+        const resultContainer = document.getElementById('result')
+        const scoreDisplay = document.getElementById('score')
+       
+
+
+
+
+       const questions = [
+  {
+    question: "Things that Pinki likes to do in Free Time?",
+    choices: ["Watching Movies", "Sleeping", "Shopping", "Cooking"],
+    answer: "Watching Movies"
+  },
+  {
+    question: "Pinki's favourite Cartoon?",
+    choices: ["Shinchan", "Doreamon", "Moto-Patlu", "Tom & Jerry"],
+    answer: "Shinchan"
+  },
+  {
+    question: "Pinki's favourite food?",
+    choices: ["Biryani", "Momos", "Samosa", "Pizza"],
+    answer: "Biryani"
+  }
+];
+
+
+        let currentQuestionIndex = 0
+        let score = 0
+        let acceptingAnswers = false
+        let selectedAnswer = null
+        function startQuiz(){
+            startBtn.style.display = 'none'
+            questionContainer.style.display = 'block'
+            currentQuestionIndex = 0
+            score = 0
+            showQuestion()
+        }
+        function showQuestion(){
+            resetState()
+            acceptingAnswers = true
+            const currentQuestion = questions[currentQuestionIndex]
+            questionText.innerText = currentQuestion.question
+            currentQuestion.choices.forEach(choice => {
+                const li = document.createElement('li')
+                li.innerText = choice
+                li.addEventListener('click', selectAnswer)
+                choicesList.appendChild(li)
+            })
+        }
+        function resetState(){
+            nextBtn.style.display = 'none'
+            while(choicesList.firstChild){
+                choicesList.removeChild(choicesList.firstChild)
+            }
+        }
+        function selectAnswer(e){
+            if(!acceptingAnswers) return
+            acceptingAnswers = false
+            selectedAnswer = e.target.innerText
+            const currentQuestion = questions[currentQuestionIndex]
+            if(selectedAnswer === currentQuestion.answer){
+                score++
+            }
+            Array.from(choicesList.children).forEach(li => {
+                if(li.innerText === currentQuestion.answer){
+                    li.style.backgroundColor = 'green'
+                } else if(li.innerText === selectedAnswer){
+                    li.style.backgroundColor = 'red'
+                }
+                li.style.pointerEvents = 'none'
+            })
+            nextBtn.style.display = 'block'
+        }
+        function showResult(){
+            questionContainer.style.display = 'none'
+            resultContainer.style.display = 'block'
+            scoreDisplay.innerText = `${score} / ${questions.length}`
+        }
+        function resetQuiz(){
+            resultContainer.style.display = 'none'
+            startBtn.style.display = 'block'
+        }
+        startBtn.addEventListener('click', startQuiz)
+        nextBtn.addEventListener('click', () => {
+            currentQuestionIndex++
+            if(currentQuestionIndex < questions.length){
+                showQuestion()
+            } else {
+                showResult()
+            }
+        })
+        restartBtn.addEventListener('click', resetQuiz)
+
+
+    })
+</script>
+</html>
